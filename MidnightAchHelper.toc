@@ -1,0 +1,14 @@
+## Interface: 120100, 120105
+## Title: Midnight Achievement Helper
+## Notes: Step-by-step waypoints for the collect / go-to / talk-to Midnight exploration achievements. /mach
+## Author: Warweasel
+## Version: @project-version@
+## IconTexture: Interface\Icons\INV_Misc_Map_01
+## Category: Achievements
+## SavedVariables: MidnightAchHelperDB
+## OptionalDeps: TomTom
+
+Data_Generated.lua
+Data.lua
+Data_Extra.lua
+Core.lua

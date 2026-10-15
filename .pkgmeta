@@ -1,0 +1,10 @@
+package-as: MidnightAchHelper
+
+changelog-file: CHANGELOG.md
+
+ignore:
+  - .github
+  - .claude
+  - tools
+  - README.md
+  - .gitignore
