@@ -29,6 +29,7 @@ local function BuildSteps()
 				ach.steps[i] = {
 					name = ("Glowing Moth #%d (Renown %d)"):format(i, m[5]),
 					map = m[1], x = m[2], y = m[3], quest = m[4], note = m[6],
+					obj = ach.mothObjects and ach.mothObjects[i],
 				}
 			end
 		elseif ach.critByName then
@@ -209,17 +210,46 @@ local function RowOnEnter(self)
 		end
 		if step.note then GameTooltip:AddLine(step.note, 1, 0.82, 0, true) end
 		GameTooltip:AddLine(step.map and "Click to set a waypoint." or "Click to print the details.", 0.5, 0.8, 1)
+		GameTooltip:AddLine("Ctrl-click for the Wowhead link (comments and screenshots).", 0.5, 0.8, 1)
 	else
 		GameTooltip:AddLine(ach.name, 1, 0.82, 0)
 		if ach.desc then GameTooltip:AddLine(ach.desc, 1, 1, 1, true) end
 		if ach.info then GameTooltip:AddLine(ach.info, 1, 0.5, 0.25, true) end
-		GameTooltip:AddLine("Click: expand/collapse.  Right-click: waypoint to nearest step.  Shift-click: link.", 0.5, 0.8, 1, true)
+		GameTooltip:AddLine("Click: expand/collapse.  Right-click: waypoint to nearest step.  Shift-click: link.  Ctrl-click: Wowhead link.", 0.5, 0.8, 1, true)
 	end
 	GameTooltip:Show()
 end
 
+StaticPopupDialogs.MIDNIGHTACHHELPER_URL = {
+	text = "Wowhead link - press Ctrl+C to copy:",
+	button1 = OKAY,
+	hasEditBox = true,
+	editBoxWidth = 320,
+	OnShow = function(self, url)
+		local eb = (self.GetEditBox and self:GetEditBox()) or self.editBox or self.EditBox
+		eb:SetText(url)
+		eb:HighlightText()
+		eb:SetFocus()
+	end,
+	EditBoxOnEnterPressed = function(self) self:GetParent():Hide() end,
+	EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
+local function WowheadURL(ach, step)
+	if step and step.obj then return "https://www.wowhead.com/object=" .. step.obj end
+	if step and step.npc then return "https://www.wowhead.com/npc=" .. step.npc end
+	return "https://www.wowhead.com/achievement=" .. ach.id
+end
+
 local function RowOnClick(self, button)
 	local ach, step = self.ach, self.step
+	if IsControlKeyDown() then
+		StaticPopup_Show("MIDNIGHTACHHELPER_URL", nil, nil, WowheadURL(ach, step))
+		return
+	end
 	if step then
 		SetWaypoint(ach, step)
 	elseif IsShiftKeyDown() then
@@ -319,6 +349,9 @@ function MAH:Render()
 						local text = step.name
 						if step.map then
 							text = ("%s |cff999999%.1f, %.1f|r"):format(text, step.x, step.y)
+						end
+						if step.note then
+							text = text .. " |cff66ccff[?]|r"
 						end
 						if active and active.step == step then
 							text = "|cff00ccff>> |r" .. text
@@ -492,6 +525,52 @@ end)
 -- Slash commands
 -------------------------------------------------------------------------------
 
+-- Compares the addon's data with the game's: achievement IDs and names, and
+-- every step's criteria name. Anything printed here needs fixing in the data.
+function MAH:Check()
+	wipe(critCache)
+	local problems = 0
+	local function Problem(text)
+		problems = problems + 1
+		Print("|cffff6060" .. text .. "|r")
+	end
+	for _, ach in ipairs(ns.Achievements) do
+		local _, gameName = GetAchievementInfo(ach.id)
+		if not gameName then
+			Problem(("Unknown achievement ID %d (%s)"):format(ach.id, ach.name))
+		else
+			if gameName ~= ach.name then
+				Problem(("%d is called '%s' in game, data says '%s'"):format(ach.id, gameName, ach.name))
+			end
+			local crits = GetCriteria(ach.id)
+			local used = {}
+			for _, step in ipairs(ach.steps) do
+				if step.crit then
+					local key = strlower(step.crit)
+					used[key] = true
+					if crits[key] == nil then
+						Problem(("%s: no criteria named '%s'"):format(ach.name, step.crit))
+					end
+				end
+			end
+			-- Criteria no step points at (only meaningful where steps use criteria)
+			if next(used) then
+				for i = 1, GetAchievementNumCriteria(ach.id) or 0 do
+					local name = GetAchievementCriteriaInfo(ach.id, i)
+					if name and name ~= "" and not used[strlower(name)] then
+						Problem(("%s: game criteria '%s' has no step"):format(ach.name, name))
+					end
+				end
+			end
+		end
+	end
+	if problems == 0 then
+		Print("|cff00ff00Check passed:|r all " .. #ns.Achievements .. " achievements and their criteria match the game.")
+	else
+		Print(("%d problem%s found. Copy them from chat (or take a screenshot) so they can be fixed."):format(problems, problems == 1 and "" or "s"))
+	end
+end
+
 SLASH_MIDNIGHTACHHELPER1 = "/mach"
 SLASH_MIDNIGHTACHHELPER2 = "/midach"
 SlashCmdList.MIDNIGHTACHHELPER = function(msg)
@@ -508,8 +587,10 @@ SlashCmdList.MIDNIGHTACHHELPER = function(msg)
 				Print(("%s (%d/%d) - %s"):format(ach.name, ach.numDone, #ach.steps, ach.zone))
 			end
 		end
+	elseif msg == "check" then
+		MAH:Check()
 	elseif msg == "help" then
-		Print("/mach - toggle window, /mach nearest - waypoint to the closest step, /mach clear - remove waypoint, /mach list - print what's left")
+		Print("/mach - toggle window, /mach nearest - waypoint to the closest step, /mach clear - remove waypoint, /mach list - print what's left, /mach check - verify data against the game")
 	else
 		MAH:Toggle()
 	end

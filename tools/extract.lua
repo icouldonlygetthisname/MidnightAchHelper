@@ -133,6 +133,8 @@ local function walk(node, achID, mapID)
 				end
 				table.insert(result[achID], {
 					name = name, quest = quest, desc = c.description,
+					obj = (c._kind == "o" or c._hdr == "HEADERS.Object") and c._id or nil,
+					npc = (c._kind == "n" or c._hdr == "HEADERS.NPC") and c._id or nil,
 					map = coord and coord[3] or nil, x = coord and coord[1], y = coord and coord[2],
 				})
 			end
@@ -168,6 +170,8 @@ local function emit(id, steps)
 		out:write("\t{ name = " .. q(s.name))
 		if s.map then out:write((", map = %d, x = %.1f, y = %.1f"):format(s.map, s.x, s.y)) end
 		if s.quest then out:write(", quest = " .. s.quest) end
+		if s.obj then out:write(", obj = " .. s.obj) end
+		if s.npc then out:write(", npc = " .. s.npc) end
 		if s.desc then out:write(", note = " .. q(s.desc)) end
 		out:write(" },\n")
 		end
