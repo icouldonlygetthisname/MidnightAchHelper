@@ -8,6 +8,13 @@ local ICON_DONE = "Interface\\RaidFrame\\ReadyCheck-Ready"
 local ICON_TODO = "Interface\\RaidFrame\\ReadyCheck-NotReady"
 local ICON_INFO = "Interface\\RaidFrame\\ReadyCheck-Waiting"
 local ICON_LOCKED = "Interface\\PetBattles\\PetBattle-LockIcon"
+
+-- Quel'Thalas maps; steps anywhere else show their zone name in the list.
+local MIDNIGHT_MAPS = {
+	[2393] = true, [2395] = true, [2405] = true, [2413] = true, [2424] = true, [2437] = true,
+	[2444] = true, [2509] = true, [2512] = true, [2527] = true, [2536] = true, [2541] = true,
+	[2576] = true, [2636] = true, [2638] = true,
+}
 local ROW_HEIGHT = 18
 
 local DB
@@ -215,7 +222,14 @@ local function SetWaypoint(ach, step, quiet)
 		Print("Can't place a map pin on " .. MapName(step.map) .. ".")
 	end
 	if not quiet then
-		Print(("%s - %s %.1f, %.1f%s"):format(title, MapName(step.map), step.x, step.y, step.note and ("  (" .. step.note .. ")") or ""))
+		local where = MapName(step.map) .. (step.inside and (" (" .. step.inside .. " entrance)") or "")
+		Print(("%s - %s %.1f, %.1f%s"):format(title, where, step.x, step.y, step.note and ("  (" .. step.note .. ")") or ""))
+		-- The on-screen arrow only shows on the same continent; say so instead of looking broken.
+		local pc = PlayerWorldPos()
+		local sc = WorldPos(step.map, step.x / 100, step.y / 100)
+		if pc and sc and pc ~= sc then
+			Print("That's on another continent: the pin is on the world map now, and the on-screen arrow appears once you get there.")
+		end
 	end
 end
 
@@ -254,6 +268,9 @@ local function RowOnEnter(self)
 		end
 		if step.map then
 			GameTooltip:AddLine(("%s %.1f, %.1f"):format(MapName(step.map), step.x, step.y), 0.8, 0.8, 0.8)
+		end
+		if step.inside then
+			GameTooltip:AddLine("The pin marks the entrance to " .. step.inside .. "; the item is inside.", 0.8, 0.8, 0.8, true)
 		end
 		if step.note then GameTooltip:AddLine(step.note, 1, 0.82, 0, true) end
 		GameTooltip:AddLine(step.map and "Click to set a waypoint." or "Click to print the details.", 0.5, 0.8, 1)
@@ -408,7 +425,13 @@ function MAH:Render()
 						local icon = step.done and ICON_DONE or (step.locked and ICON_LOCKED) or (step.map and ICON_TODO or ICON_INFO)
 						local text = step.locked and ("|cff808080" .. step.name .. "|r") or step.name
 						if step.map then
-							text = ("%s |cff999999%.1f, %.1f|r"):format(text, step.x, step.y)
+							local where = ""
+							if step.inside then
+								where = step.inside .. " entrance "
+							elseif not MIDNIGHT_MAPS[step.map] then
+								where = MapName(step.map) .. " "
+							end
+							text = ("%s |cff999999%s%.1f, %.1f|r"):format(text, where, step.x, step.y)
 						end
 						if step.note then
 							text = text .. " |cff66ccff[?]|r"

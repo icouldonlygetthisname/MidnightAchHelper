@@ -313,11 +313,11 @@ ns.Achievements = {
 		info = "Each keepsake object only appears while you are on (or have finished) its patron's quest. Keepsakes inside dungeons are easiest to grab while solo.",
 		steps = {
 			{ name = "Scarred Spear: accept 'A Favor to Axe' from Danath Trollbane", crit = "Scarred Spear", accept = 92319, map = ARC, x = 46.3, y = 56.7 },
-			{ name = "Scarred Spear: loot it in Hellfire Ramparts", crit = "Scarred Spear", item = 250872, obj = 572029, note = "Hellfire Ramparts dungeon (Hellfire Peninsula). Kill the first boss, go up to the next floor; it's on the platform between the second and last boss, left of the path. You can still grab it after turning the quest in." },
+			{ name = "Scarred Spear: loot it in Hellfire Ramparts", crit = "Scarred Spear", item = 250872, obj = 572029, inside = "Hellfire Ramparts", map = 100, x = 47.7, y = 53.6, note = "Hellfire Ramparts dungeon (Hellfire Peninsula). Kill the first boss, go up to the next floor; it's on the platform between the second and last boss, left of the path. You can still grab it after turning the quest in." },
 			{ name = "Scarred Spear: display it", crit = "Scarred Spear", quest = 92375, map = ARC, x = 67.0, y = 52.8, note = "In the right-side room of the Arcantina." },
 
 			{ name = "Ebon Banner: accept 'A Frostbitten Tally' from Gidwin Goldbraids", crit = "Ebon Banner", accept = 92321, map = ARC, x = 37.7, y = 53.6, note = "Gidwin moves between 37.7,53.6 / 39.0,55.1 / 43.1,64.3." },
-			{ name = "Ebon Banner: loot it in Icecrown Citadel", crit = "Ebon Banner", item = 250873, obj = 572030, note = "Icecrown Citadel raid. On the left side of Lady Deathwhisper's boss room." },
+			{ name = "Ebon Banner: loot it in Icecrown Citadel", crit = "Ebon Banner", item = 250873, obj = 572030, inside = "Icecrown Citadel", map = 118, x = 53.7, y = 87.0, note = "Icecrown Citadel raid. On the left side of Lady Deathwhisper's boss room." },
 			{ name = "Ebon Banner: display it", crit = "Ebon Banner", quest = 92376, map = ARC, x = 39.8, y = 49.7 },
 
 			{ name = "Corrupted Lantern: accept 'Still Behind Enemy Portals' from Marius Felbane", crit = "Corrupted Lantern", accept = 92320, map = ARC, x = 59.0, y = 78.0 },
@@ -325,7 +325,7 @@ ns.Achievements = {
 			{ name = "Corrupted Lantern: display it", crit = "Corrupted Lantern", quest = 92377, map = ARC, x = 75.3, y = 38.9 },
 
 			{ name = "Pylon Fragment: accept 'Uncrowned's Cold Case' from Kelsey Steelspark", crit = "Pylon Fragment", accept = 92324, map = ARC, x = 78.7, y = 60.0 },
-			{ name = "Pylon Fragment: loot it in Dire Maul", crit = "Pylon Fragment", item = 250877, obj = 572034, note = "Dire Maul West - Capital Gardens (Feralas). Run straight down the ramp to the first boss, Tendris Warpwood; the fragment is on your left (the boss's right), in the corner next to some rocks. It's marked on the dungeon map." },
+			{ name = "Pylon Fragment: loot it in Dire Maul", crit = "Pylon Fragment", item = 250877, obj = 572034, inside = "Dire Maul West", map = 69, x = 60.3, y = 30.2, note = "Dire Maul West - Capital Gardens (Feralas). Run straight down the ramp to the first boss, Tendris Warpwood; the fragment is on your left (the boss's right), in the corner next to some rocks. It's marked on the dungeon map." },
 			{ name = "Pylon Fragment: display it", crit = "Pylon Fragment", quest = 92380, map = ARC, x = 23.9, y = 22.0 },
 
 			{ name = "Heavy Anchor: accept 'The Fragrance of the Dunes' from Nisha", crit = "Heavy Anchor", accept = 92326, map = ARC, x = 45.0, y = 81.4 },
@@ -337,7 +337,7 @@ ns.Achievements = {
 			{ name = "Sandy Tapestry: display it", crit = "Sandy Tapestry", quest = 92383, map = ARC, x = 45.9, y = 82.4 },
 
 			{ name = "Evergreen Vine: accept 'Where the Fire Once Burned' from Thisalee Crow", crit = "Evergreen Vine", accept = 92323, map = ARC, x = 76.4, y = 39.4 },
-			{ name = "Evergreen Vine: loot it in the Firelands", crit = "Evergreen Vine", item = 250876, obj = 572033, note = "Firelands raid. Up the Path of Corruption in the north-west corner, at the Circle of Thorns (about 27.1, 24.4 on the raid map)." },
+			{ name = "Evergreen Vine: loot it in the Firelands", crit = "Evergreen Vine", item = 250876, obj = 572033, inside = "Firelands", map = 198, x = 47.3, y = 78.1, note = "Firelands raid. Up the Path of Corruption in the north-west corner, at the Circle of Thorns (about 27.1, 24.4 on the raid map)." },
 			{ name = "Evergreen Vine: display it", crit = "Evergreen Vine", quest = 92379, map = ARC, x = 37.2, y = 29.5 },
 
 			{ name = "Weathered Tome: accept 'Crumbling Legacy' from Gorgonna", crit = "Weathered Tome", accept = 92325, map = ARC, x = 68.2, y = 58.5 },
@@ -353,7 +353,7 @@ ns.Achievements = {
 			{ name = "Dried Roses: display them", crit = "Dried Roses", quest = 92384, map = ARC, x = 41.7, y = 48.1 },
 
 			{ name = "Ancient Zandalari Scroll: accept 'Timear Foresees a Proof of Demise!' from Archmage Lan'dalock", crit = "Ancient Zandalari Scroll", accept = 92322, map = ARC, x = 30.0, y = 19.3 },
-			{ name = "Ancient Zandalari Scroll: loot it in Throne of Thunder", obj = 572032, crit = "Ancient Zandalari Scroll", item = 250875, note = "Throne of Thunder raid (Isle of Thunder). After the first boss, in the hallway before the wind bridges. The quest item itself drops from the 3rd boss (the council)." },
+			{ name = "Ancient Zandalari Scroll: loot it in Throne of Thunder", obj = 572032, crit = "Ancient Zandalari Scroll", item = 250875, inside = "Throne of Thunder", map = 504, x = 63.4, y = 32.6, note = "Throne of Thunder raid (Isle of Thunder). After the first boss, in the hallway before the wind bridges. The quest item itself drops from the 3rd boss (the council)." },
 			{ name = "Ancient Zandalari Scroll: display it", crit = "Ancient Zandalari Scroll", quest = 92378, map = ARC, x = 25.8, y = 43.4 },
 		},
 	},
@@ -385,7 +385,7 @@ ns.Achievements = {
 		desc = "Fetch Chen's lantern from Stormstout Brewery and place it in the Arcantina.",
 		steps = {
 			{ name = "Accept 'Moments in a Mug' from Chen Stormstout", crit = "Stormstout Brewery Lantern", accept = 95779, map = ARC, x = 43.2, y = 61.5 },
-			{ name = "Loot the Stormstout Brewery Lantern", crit = "Stormstout Brewery Lantern", item = 275047, obj = 654977, note = "Stormstout Brewery dungeon (Valley of the Four Winds). Just past the first boss, hanging in a doorway." },
+			{ name = "Loot the Stormstout Brewery Lantern", crit = "Stormstout Brewery Lantern", item = 275047, obj = 654977, inside = "Stormstout Brewery", map = 376, x = 36.0, y = 69.0, note = "Stormstout Brewery dungeon (Valley of the Four Winds). Just past the first boss, hanging in a doorway." },
 			{ name = "Display the lantern", crit = "Stormstout Brewery Lantern", quest = 95782, map = ARC, x = 63.3, y = 44.8, note = "Over the doorway between the main room and the rear-right room. The placeholder only shows while the lantern is in your bags." },
 		},
 	},
