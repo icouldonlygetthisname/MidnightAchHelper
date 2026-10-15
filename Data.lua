@@ -97,7 +97,7 @@ ns.Achievements = {
 	{
 		id = 62187, name = "Grand Magister's Sommelier", zone = "Eversong Woods", critByName = true,
 		desc = "Talk to every drink vendor during 'Special Assignment: The Grand Magister's Drink'.",
-		info = "Only possible while the Special Assignment 'The Grand Magister's Drink' (40.7, 61.2) is up. Solo, the quest completes after 3 drinks and you have to wait for it to come back. Join or form a Raid group first: then every drink's dialog option counts and the quest doesn't end early.",
+		info = "1) Unlock it: complete 3 Eversong Woods world quests to unlock the Special Assignment 'The Grand Magister's Drink' (40.7, 61.2). Assignments rotate, so it must be the active one; the unlock reportedly needs a level 90, but alts from 80 can then do it.\n2) Join a Raid group BEFORE talking to anyone. In a raid the quest doesn't progress (so it won't end after 3 drinks) but every tasting still counts - you can do all 12 in one go.\n3) Talk to each vintner and ask for a tasting; it counts immediately.\nTurn off quest-automation addons (e.g. Zygor auto-select) so they don't pick dialog for you.",
 		steps = {
 			{ name = "Heron's Vision of Cloudwalking",   map = EVE, x = 39.3, y = 60.2 },
 			{ name = "Areyn's Elrendar Red",             map = EVE, x = 39.3, y = 61.4 },
@@ -105,7 +105,7 @@ ns.Achievements = {
 			{ name = "Lady Marilin's Arcwine Reserve",   map = EVE, x = 40.3, y = 61.2 },
 			{ name = "Landraelanis' Muskmelon Draught",  map = EVE, x = 41.5, y = 61.3 },
 			{ name = "Limien's Arcane Infusion",         map = EVE, x = 40.7, y = 60.1 },
-			{ name = "Duskwither's Dancing Merlot",      map = EVE, x = 38.3, y = 58.4 },
+			{ name = "Duskwither's Dancing Merlot",      map = EVE, x = 38.3, y = 58.4, note = "Magister Duskwither stands out by the runestone, not in the village with the others." },
 			{ name = "Nara's Essence of Butterfly",      map = EVE, x = 39.6, y = 60.6 },
 			{ name = "Quarelestra's Sanguine Affair",    map = EVE, x = 39.8, y = 60.9 },
 			{ name = "Sheri's Laughing Rose",            map = EVE, x = 40.8, y = 60.5 },
