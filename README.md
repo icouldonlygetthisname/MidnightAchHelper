@@ -2,7 +2,7 @@
 
 A lightweight World of Warcraft addon that walks you through the **Midnight exploration achievements that only need you to collect something, go somewhere or talk to someone**. It covers the treasures, lore objects, telescopes, NPC hunts and Arcantina collections, with a waypoint for every step.
 
-It deliberately leaves out achievements built on combat, rares, RNG, long grinds or other players (Abyss Anglers, Abundance, Vaults of Atal'Utek patrols, rares, Share a Drink and so on).
+It also covers each zone's rare-hunting achievement, with every rare's spawn point. It deliberately leaves out achievements built on RNG, long grinds or other players (Abyss Anglers, Abundance, Vaults of Atal'Utek patrols, Share a Drink and so on).
 
 ## Usage
 
@@ -24,15 +24,15 @@ When the step you're pinned to is done, the waypoint moves to the nearest remain
 
 ## Covered achievements
 
-**Zul'Aman:** Gnome Alone, Shadowpine Scattered, The Frog and the Princesses, Put a Pin in It, Spiritpaw Marathon, Treasures of Zul'Aman, Zul'Aman: The Highest Peaks
+**Zul'Aman:** Gnome Alone, Shadowpine Scattered, The Frog and the Princesses, Put a Pin in It, Spiritpaw Marathon, Treasures of Zul'Aman, Zul'Aman: The Highest Peaks, Tallest Tree in the Forest (rares)
 
-**Eversong Woods:** Ever Painting, Grand Magister's Sommelier, Treasures of Eversong Woods, Eversong Woods: The Highest Peaks
+**Eversong Woods:** Ever Painting, Grand Magister's Sommelier, Treasures of Eversong Woods, Eversong Woods: The Highest Peaks, A Bloody Song (rares)
 
-**Harandar:** Chronicler of the Haranir, Dust 'Em Off (all 120 moths, tagged with the renown that unlocks them), Treasures of Harandar, Harandar: The Highest Peaks, From The Cradle to the Grave
+**Harandar:** Chronicler of the Haranir, Dust 'Em Off (all 120 moths, tagged with the renown that unlocks them), Treasures of Harandar, Harandar: The Highest Peaks, From The Cradle to the Grave, Leaf None Behind (rares)
 
-**Voidstorm:** Treasures of Voidstorm, Voidstorm: The Highest Peaks
+**Voidstorm:** Treasures of Voidstorm, Voidstorm: The Highest Peaks, The Ultimate Predator (rares)
 
-**The Coiled Isle:** Treasures of the Coiled Isle, Student of Hissstory, The Honored Dead
+**The Coiled Isle:** Treasures of the Coiled Isle, Student of Hissstory, The Honored Dead, Coiled to Strike (rares)
 
 **The Arcantina:** Highly Decorated, Well Decorated, Old Soldiers, New Friends
 

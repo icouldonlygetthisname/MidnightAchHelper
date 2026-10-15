@@ -13,7 +13,7 @@ local ICON_LOCKED = "Interface\\PetBattles\\PetBattle-LockIcon"
 local MIDNIGHT_MAPS = {
 	[2393] = true, [2395] = true, [2405] = true, [2413] = true, [2424] = true, [2437] = true,
 	[2444] = true, [2509] = true, [2512] = true, [2527] = true, [2536] = true, [2541] = true,
-	[2576] = true, [2636] = true, [2638] = true,
+	[2576] = true, [2613] = true, [2636] = true, [2638] = true, [2642] = true,
 }
 local ROW_HEIGHT = 18
 

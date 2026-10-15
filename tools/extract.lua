@@ -66,6 +66,16 @@ local files = {
 }
 for _, f in ipairs(files) do scanNames(QT .. f); load(QT .. f) end
 
+-- Rare files are loaded separately: ATT lists rares by zone, not under the
+-- achievements, so they're matched to criteria names further down.
+local rareRoots = {}
+env.root = function(_, node) rareRoots[#rareRoots + 1] = node end
+local rareFiles = {
+	"Eversong Woods/Rares.lua", "Zul'Aman/Rares.lua", "Harandar/Rares.lua",
+	"Voidstorm/Rares.lua", "The Coiled Isle/Rares.lua",
+}
+for _, f in ipairs(rareFiles) do scanNames(QT .. f); load(QT .. f) end
+
 local function children(node)
 	local list = {}
 	if type(node.groups) == "table" then for _, c in ipairs(node.groups) do list[#list + 1] = c end end
@@ -149,6 +159,44 @@ local function walk(node, achID, mapID)
 end
 for _, r in ipairs(roots) do walk(r) end
 
+-- Every rare NPC with a location, keyed by name. Their kill quests are daily,
+-- so no quest is kept: the addon tracks rares through the achievement criteria.
+-- ATT comments can carry a title or note ("Big Mon <Ancient Amani Warband>",
+-- "Overfester Hydra (vignette - ...)") and differ in case from the criteria.
+local function rareKey(name)
+	return name:gsub("%s*<.->", ""):gsub("%s*%(.-%)", ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+end
+local rareByName = {}
+local function walkRares(node)
+	if type(node) ~= "table" then return end
+	if node._kind == "n" and type(node._id) == "number" then
+		local name = names["n" .. node._id]
+		local coord = firstCoord(node)
+		if name and coord and not rareByName[rareKey(name)] then
+			rareByName[rareKey(name)] = { npc = node._id, desc = node.description,
+				map = coord[3], x = coord[1], y = coord[2] }
+		end
+	end
+	for _, c in ipairs(children(node)) do walkRares(c) end
+end
+for _, r in ipairs(rareRoots) do walkRares(r) end
+
+-- Criteria names per rare achievement ("achID<TAB>name" per line), in criteria order.
+local CRITERIA = arg[3] or (arg[0]:gsub("[^/\\]*$", "") .. "rare_criteria.txt")
+local rareAchs, rareOrder = {}, {}
+for line in io.lines(CRITERIA) do
+	local id, name = line:match("^(%d+)\t(.-)%s*$")
+	if id then
+		id = tonumber(id)
+		if not rareAchs[id] then rareAchs[id] = {}; rareOrder[#rareOrder + 1] = id end
+		local found = rareByName[rareKey(name)]
+		if not found then io.stderr:write("WARN no ATT location for rare '" .. name .. "' (" .. id .. ")\n") end
+		local rare = { name = name }	-- criteria spelling, so the addon's crit match works
+		for k, v in pairs(found or {}) do rare[k] = v end
+		table.insert(rareAchs[id], rare)
+	end
+end
+
 local function q(s) return string.format("%q", s):gsub("\\\n", "\\n") end
 -- Achievements the addon uses; everything else found in the files is skipped.
 local WANTED = {
@@ -182,7 +230,9 @@ local ids = {}
 for id in pairs(result) do if WANTED[id] then ids[#ids + 1] = id end end
 table.sort(ids)
 for _, id in ipairs(ids) do emit(id, result[id]) end
+for _, id in ipairs(rareOrder) do emit(id, rareAchs[id]) end
 out:close()
 for _, id in ipairs(ids) do io.write(id, " ", #result[id], "\n") end
+for _, id in ipairs(rareOrder) do io.write("rares ", id, " ", #rareAchs[id], "\n") end
 -- Flight points are listed for reference only; Data.lua uses Wowhead's criteria names.
 for _, f in ipairs(fps) do io.write("fp ", tostring(f.name), " ", tostring(f.map), " ", tostring(f.x), " ", tostring(f.y), "\n") end

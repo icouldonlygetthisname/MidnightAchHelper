@@ -1,0 +1,71 @@
+61507	Warden of Weeds
+61507	Harried Hawkstrider
+61507	Overfester Hydra
+61507	Bloated Snapdragon
+61507	Cre'van
+61507	Coralfang
+61507	Lady Liminus
+61507	Terrinor
+61507	Bad Zed
+61507	Waverly
+61507	Banuran
+61507	Lost Guardian
+61507	Duskburn
+61507	Malfunctioning Construct
+61507	Dame Bloodshed
+62122	Necrohexxer Raz'ka
+62122	The Snapping Scourge
+62122	Skullcrusher Harak
+62122	Lightwood Borer
+62122	Mrrlokk
+62122	Poacher Rav'ik
+62122	Spinefrill
+62122	Oophaga
+62122	Tiny Vermin
+62122	Voidtouched Crustacean
+62122	The Devouring Invader
+62122	Elder Oaktalon
+62122	Depthborn Eelamental
+62122	The Decaying Diamondback
+62122	Ash'an the Empowered
+61264	Rhazul
+61264	Chironex
+61264	Ha'kalawe
+61264	Tallcap the Truthspreader
+61264	Queen Lashtongue
+61264	Chlorokyll
+61264	Stumpy
+61264	Serrasa
+61264	Mindrot
+61264	Dracaena
+61264	Treetop
+61264	Oro'ohna
+61264	Pterrock
+61264	Ahl'ua'huhi
+61264	Annulus the Worldshaker
+62130	Sundereth the Caller
+62130	Territorial Voidscythe
+62130	Tremora
+62130	Screammaxa the Matriarch
+62130	Bane of the Vilebloods
+62130	Aeonelle Blackstar
+62130	Lotus Darkblossom
+62130	Queen o' War
+62130	Ravengerus
+62130	Rakshur the Bonegrinder
+62130	Bilemaw the Gluttonous
+62130	Eruundi
+62130	Nightbrood
+62130	Far'thana the Mad
+63358	Farthik the Plunderer
+63358	Siltmouth
+63358	Kari'zah the Forgotten
+63358	Lockjaw
+63358	Hisstara
+63358	Szarith the Fanged
+63358	Garsecg
+63358	Nar'zira
+63358	Coin-Eye Skully
+63358	Big Mon
+63358	Sss'alik
+63358	Destra

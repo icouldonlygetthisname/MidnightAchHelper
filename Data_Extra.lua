@@ -23,7 +23,11 @@ local EXTRA_NOTES = {
 	["Rookery Cache"] = "Feed Tasty Meat to the Mischievous Chick (24.2, 69.5) and grab the Rookery Cache Key (24.1, 69.5).",
 	["Gift of the Phoenix"] = "Pick up the Sunstrider Vessel, catch 5 Cinder Embers, then put it back where you found it.",
 	["Gilded Arnillary Sphere"] = "Complete any quest after looting it to get the Heathlight Armillary decor.",
+	["Nar'zira"] = "Inside the Tomb of the Lost Priest.",
+	["Szarith the Fanged"] = "In The Underbelly of the Vaults of Atal'Utek.",
 }
+
+local RARE_INFO = "Rares respawn on a timer, so if one isn't up when you arrive, come back later. Each rare ticks off once the achievement counts the kill."
 
 local function Gen(id)
 	local steps = {}
@@ -51,6 +55,15 @@ local extra = {
 	{ id = 61263, name = "Treasures of Harandar", zone = "Harandar", desc = "Loot every hidden treasure in Harandar.", steps = Gen(61263) },
 	{ id = 62126, name = "Treasures of Voidstorm", zone = "Voidstorm", desc = "Loot every hidden treasure in Voidstorm.", steps = Gen(62126) },
 	{ id = 63359, name = "Treasures of the Coiled Isle", zone = "The Coiled Isle", desc = "Loot every hidden treasure on the Coiled Isle. Several of them have multi-step puzzles; hover a step for the instructions.", steps = Gen(63359) },
+
+	-------------------------------------------------------------------------
+	-- Rares (tracked through the achievement criteria; kill quests are daily)
+	-------------------------------------------------------------------------
+	{ id = 61507, name = "A Bloody Song", zone = "Eversong Woods", critByName = true, desc = "Defeat every rare in Eversong Woods.", info = RARE_INFO, steps = Gen(61507) },
+	{ id = 62122, name = "Tallest Tree in the Forest", zone = "Zul'Aman", critByName = true, desc = "Defeat every rare in Zul'Aman.", info = RARE_INFO, steps = Gen(62122) },
+	{ id = 61264, name = "Leaf None Behind", zone = "Harandar", critByName = true, desc = "Defeat every rare in Harandar.", info = RARE_INFO, steps = Gen(61264) },
+	{ id = 62130, name = "The Ultimate Predator", zone = "Voidstorm", critByName = true, desc = "Defeat every rare in Voidstorm.", info = RARE_INFO, steps = Gen(62130) },
+	{ id = 63358, name = "Coiled to Strike", zone = "The Coiled Isle", critByName = true, desc = "Defeat every rare on the Coiled Isle.", info = RARE_INFO, steps = Gen(63358) },
 
 	-------------------------------------------------------------------------
 	-- Lore objects
