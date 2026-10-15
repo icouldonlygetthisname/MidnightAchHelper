@@ -38,8 +38,9 @@ local function BuildSteps()
 				if step.crit == nil then step.crit = step.name end
 			end
 		end
-		for _, step in ipairs(ach.steps) do
+		for i, step in ipairs(ach.steps) do
 			if step.chain then ach.hasChains = true end
+			step.key = ach.id .. ":" .. i	-- for manual overrides in saved variables
 		end
 	end
 end
@@ -66,6 +67,7 @@ end
 
 local function IsStepDone(ach, step)
 	if ach.done then return true end
+	if DB.manual[step.key] then return true end
 	if step.crit and GetCriteria(ach.id)[strlower(step.crit)] then return true end
 	if step.quest and C_QuestLog.IsQuestFlaggedCompleted(step.quest) then return true end
 	if step.accept and (C_QuestLog.IsOnQuest(step.accept) or C_QuestLog.IsQuestFlaggedCompleted(step.accept)) then return true end
@@ -256,6 +258,11 @@ local function RowOnEnter(self)
 		if step.note then GameTooltip:AddLine(step.note, 1, 0.82, 0, true) end
 		GameTooltip:AddLine(step.map and "Click to set a waypoint." or "Click to print the details.", 0.5, 0.8, 1)
 		GameTooltip:AddLine("Ctrl-click for the Wowhead link (comments and screenshots).", 0.5, 0.8, 1)
+		if DB.manual[step.key] then
+			GameTooltip:AddLine("Marked done by you. Alt-click to undo.", 1, 0.6, 0)
+		else
+			GameTooltip:AddLine("Alt-click to mark done if it didn't tick off by itself.", 0.5, 0.8, 1)
+		end
 	else
 		GameTooltip:AddLine(ach.name, 1, 0.82, 0)
 		if ach.desc then GameTooltip:AddLine(ach.desc, 1, 1, 1, true) end
@@ -291,6 +298,14 @@ end
 
 local function RowOnClick(self, button)
 	local ach, step = self.ach, self.step
+	if step and IsAltKeyDown() then
+		DB.manual[step.key] = (not DB.manual[step.key]) or nil
+		Print(("%s: %s"):format(step.name, DB.manual[step.key] and "marked done" or "unmarked"))
+		UpdateStatus()
+		AdvanceIfDone()
+		MAH:Render()
+		return
+	end
 	if IsControlKeyDown() then
 		StaticPopup_Show("MIDNIGHTACHHELPER_URL", nil, nil, WowheadURL(ach, step))
 		return
@@ -535,6 +550,7 @@ MAH:SetScript("OnEvent", function(self, event, arg1)
 		MidnightAchHelperDB = MidnightAchHelperDB or {}
 		DB = MidnightAchHelperDB
 		DB.collapsed = DB.collapsed or {}
+		DB.manual = DB.manual or {}
 		BuildSteps()
 		-- Moth list is long; start it collapsed.
 		if DB.collapsed[61052] == nil then DB.collapsed[61052] = true end
@@ -616,6 +632,8 @@ function MAH:Check()
 	end
 end
 
+local questSnapshot	-- set by /mach snap, compared by /mach diff
+
 SLASH_MIDNIGHTACHHELPER1 = "/mach"
 SLASH_MIDNIGHTACHHELPER2 = "/midach"
 SlashCmdList.MIDNIGHTACHHELPER = function(msg)
@@ -632,6 +650,28 @@ SlashCmdList.MIDNIGHTACHHELPER = function(msg)
 				Print(("%s (%d/%d) - %s"):format(ach.name, ach.numDone, #ach.steps, ach.zone))
 			end
 		end
+	elseif msg == "snap" then
+		questSnapshot = {}
+		for _, id in ipairs(C_QuestLog.GetAllCompletedQuestIDs() or {}) do questSnapshot[id] = true end
+		Print("Snapshot taken. Do the thing (click the object, talk to the NPC), then type /mach diff.")
+	elseif msg == "diff" then
+		if not questSnapshot then
+			Print("Type /mach snap first.")
+		else
+			local new = {}
+			for _, id in ipairs(C_QuestLog.GetAllCompletedQuestIDs() or {}) do
+				if not questSnapshot[id] then new[#new + 1] = id end
+			end
+			table.sort(new)
+			if #new == 0 then
+				Print("No new quest flags since the snapshot.")
+			else
+				Print("Quests flagged since the snapshot: |cffffff00" .. table.concat(new, ", ") .. "|r")
+			end
+		end
+	elseif msg:match("^quest %d+$") then
+		local id = tonumber(msg:match("%d+"))
+		Print(("Quest %d: %s"):format(id, C_QuestLog.IsQuestFlaggedCompleted(id) and "|cff00ff00completed|r" or "|cffff6060not completed|r"))
 	elseif msg == "check" then
 		MAH:Check()
 	elseif msg == "help" then
