@@ -7,6 +7,7 @@ local PREFIX = "|cff66ccffMidnight Ach Helper:|r "
 local ICON_DONE = "Interface\\RaidFrame\\ReadyCheck-Ready"
 local ICON_TODO = "Interface\\RaidFrame\\ReadyCheck-NotReady"
 local ICON_INFO = "Interface\\RaidFrame\\ReadyCheck-Waiting"
+local ICON_LOCKED = "Interface\\PetBattles\\PetBattle-LockIcon"
 local ROW_HEIGHT = 18
 
 local DB
@@ -36,6 +37,9 @@ local function BuildSteps()
 			for _, step in ipairs(ach.steps) do
 				if step.crit == nil then step.crit = step.name end
 			end
+		end
+		for _, step in ipairs(ach.steps) do
+			if step.chain then ach.hasChains = true end
 		end
 	end
 end
@@ -69,13 +73,48 @@ local function IsStepDone(ach, step)
 	return false
 end
 
+-- Steps that must be done in order share a chain:
+--   ach.ordered = true   -> all of the achievement's steps form one chain
+--   ach.ordered = "crit" -> steps with the same crit form a chain (e.g. one per item)
+--   step.chain           -> explicit chain name, overrides the above
+local function ChainOf(ach, step)
+	if step.chain then return step.chain end
+	if ach.ordered == "crit" then return step.crit end
+	if ach.ordered then return "all" end
+end
+
 local function UpdateStatus()
 	wipe(critCache)
 	for _, ach in ipairs(ns.Achievements) do
 		ach.done = IsAchDone(ach)
-		local n = 0
-		for _, step in ipairs(ach.steps) do
+		local steps = ach.steps
+		for _, step in ipairs(steps) do
 			step.done = IsStepDone(ach, step)
+			step.locked = nil
+		end
+		if ach.ordered or ach.hasChains then
+			-- A later step being done means the earlier ones in its chain are too
+			-- (e.g. an item already displayed no longer needs looting).
+			local laterDone = {}
+			for i = #steps, 1, -1 do
+				local chain = ChainOf(ach, steps[i])
+				if chain then
+					if laterDone[chain] then steps[i].done = true end
+					if steps[i].done then laterDone[chain] = true end
+				end
+			end
+			-- Only the first unfinished step of each chain is available.
+			local blocked = {}
+			for _, step in ipairs(steps) do
+				local chain = ChainOf(ach, step)
+				if chain and not step.done then
+					if blocked[chain] then step.locked = blocked[chain] end
+					blocked[chain] = blocked[chain] or step
+				end
+			end
+		end
+		local n = 0
+		for _, step in ipairs(steps) do
 			if step.done then n = n + 1 end
 		end
 		ach.numDone = n
@@ -122,7 +161,7 @@ local function FindNearest(onlyAch)
 	for _, ach in ipairs(ns.Achievements) do
 		if (not onlyAch or ach == onlyAch) and not ach.done then
 			for _, step in ipairs(ach.steps) do
-				if not step.done then
+				if not step.done and not step.locked then
 					local d = StepDistance(step, pc, px, py)
 					if d and (not bestDist or d < bestDist) then
 						bestAch, bestStep, bestDist = ach, step, d
@@ -136,7 +175,7 @@ end
 
 local function FirstIncomplete(ach)
 	for _, step in ipairs(ach.steps) do
-		if not step.done then return step end
+		if not step.done and not step.locked then return step end
 	end
 end
 
@@ -152,6 +191,9 @@ local function ClearWaypoint()
 end
 
 local function SetWaypoint(ach, step, quiet)
+	if step.locked and not quiet then
+		Print(("|cffff9900Do this first:|r %s"):format(step.locked.name))
+	end
 	ClearWaypoint()
 	active = { ach = ach, step = step }
 	if not step.map then
@@ -205,6 +247,9 @@ local function RowOnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	if step then
 		GameTooltip:AddLine(step.name, 1, 1, 1, true)
+		if step.locked then
+			GameTooltip:AddLine("Locked - do this first: " .. step.locked.name, 1, 0.6, 0, true)
+		end
 		if step.map then
 			GameTooltip:AddLine(("%s %.1f, %.1f"):format(MapName(step.map), step.x, step.y), 0.8, 0.8, 0.8)
 		end
@@ -345,8 +390,8 @@ function MAH:Render()
 						i = i + 1
 						row = GetRow(i)
 						row.ach, row.step = ach, step
-						local icon = step.done and ICON_DONE or (step.map and ICON_TODO or ICON_INFO)
-						local text = step.name
+						local icon = step.done and ICON_DONE or (step.locked and ICON_LOCKED) or (step.map and ICON_TODO or ICON_INFO)
+						local text = step.locked and ("|cff808080" .. step.name .. "|r") or step.name
 						if step.map then
 							text = ("%s |cff999999%.1f, %.1f|r"):format(text, step.x, step.y)
 						end

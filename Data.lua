@@ -58,8 +58,9 @@ ns.Achievements = {
 		},
 	},
 	{
-		id = 62199, name = "Put a Pin in It", zone = "Zul'Aman",
+		id = 62199, name = "Put a Pin in It", zone = "Zul'Aman", ordered = true,
 		desc = "Find Chu'ke the possessed doll, fetch its button, then meet it again.",
+		info = "Must be done in order: each step only works after the previous one.",
 		steps = {
 			{ name = "Talk to Chu'ke on a tiny island off the east coast", npc = 258933, crit = "Chu'ke found", quest = 95005, map = ZUL, x = 58.8, y = 70.4, note = "A small doll on a tiny island off the east coast, near Amani'Zar Village. Talk to him; he then leaves for the southwest beach." },
 			{ name = "Get the button from Kalika in Witherbark Bluffs", obj = 627489, crit = "Chu'ke joined", quest = 95045, map = ZUL, x = 38.7, y = 23.9, note = "Talk to Kalika (the Tailoring trainer) and pick 'I need a button that is about the size of an eye.' The button is tiny and bronze, on the floor behind her: by the three small green (jade eagle) statues next to some boxes, behind the one standing on the floor." },
@@ -67,7 +68,7 @@ ns.Achievements = {
 		},
 	},
 	{
-		id = 62202, name = "Spiritpaw Marathon", zone = "Zul'Aman",
+		id = 62202, name = "Spiritpaw Marathon", zone = "Zul'Aman", ordered = true,
 		desc = "Carry a Kapara Pup from Feevra to the Shrine of Filo without mounting.",
 		info = "Mounting drops the pup and fails the run. Ghost Wolf, Divine Steed, druid travel/flight form, Stealth and a Goblin Glider all keep it. You have 30 minutes; the walk takes about 5.",
 		steps = {
@@ -307,7 +308,7 @@ ns.Achievements = {
 	-- The Arcantina
 	-------------------------------------------------------------------------
 	{
-		id = 61083, name = "Highly Decorated", zone = "The Arcantina",
+		id = 61083, name = "Highly Decorated", zone = "The Arcantina", ordered = "crit",
 		desc = "Take each patron's quest, fetch their keepsake, then place it in the Arcantina.",
 		info = "Each keepsake object only appears while you are on (or have finished) its patron's quest. Keepsakes inside dungeons are easiest to grab while solo.",
 		steps = {
@@ -380,7 +381,7 @@ ns.Achievements = {
 		},
 	},
 	{
-		id = 63620, name = "Well Decorated", zone = "The Arcantina",
+		id = 63620, name = "Well Decorated", zone = "The Arcantina", ordered = true,
 		desc = "Fetch Chen's lantern from Stormstout Brewery and place it in the Arcantina.",
 		steps = {
 			{ name = "Accept 'Moments in a Mug' from Chen Stormstout", crit = "Stormstout Brewery Lantern", accept = 95779, map = ARC, x = 43.2, y = 61.5 },
