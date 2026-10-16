@@ -24,6 +24,11 @@ local EXTRA_NOTES = {
 	["Gift of the Phoenix"] = "Pick up the Sunstrider Vessel, catch 5 Cinder Embers, then put it back where you found it.",
 	["Gilded Arnillary Sphere"] = "Complete any quest after looting it to get the Heathlight Armillary decor.",
 	["Nar'zira"] = "Inside the Tomb of the Lost Priest.",
+	-- Voidstorm (Wowhead comments; respawn times are player reports)
+	["Bane of the Vilebloods"] = "Respawns roughly every 25 minutes. Also reported at 47.2, 79.8.",
+	["Queen o' War"] = "Summoned, not a timer spawn: click the Crown of the Lost Queen sitting on a small rock on the ground outside the building (55.7, 79.5 - behind the building, not up on the cliff). The crown comes back roughly every 25-30 minutes.",
+	["Rakshur the Bonegrinder"] = "Respawns roughly every 23 minutes. Some players think you need War Mode or Void-Tainted Remains looted for him to show; others got him without either.",
+	["Eruundi"] = "In the south-east corner of Master's Perch, walking the little path (exact spawn point 41.1, 88.9 on the Slayer's Rise map). Respawn reports range from 10 to 45 minutes.",
 	["Szarith the Fanged"] = "In The Underbelly of the Vaults of Atal'Utek.",
 }
 
