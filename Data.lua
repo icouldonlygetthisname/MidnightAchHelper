@@ -120,7 +120,7 @@ ns.Achievements = {
 	{
 		id = 61344, name = "Chronicler of the Haranir", zone = "Harandar", critByName = true,
 		desc = "Click the lore objects that belong to each Legend of the Haranir.",
-		info = "Lore objects only appear while you are on that legend's quest (including its dream-phase Vision Walk), so grab all three before you turn the quest in. Pick a legend each week from Zur'ashar Kassameh (54.2, 53.1) through 'Lost Legends'. Missed one? After all the legends have rotated, the weekly lets you redo a legend you've already done.",
+		info = "Each legend's three lore objects only appear while you're on that legend's quest (including its dream-phase Vision Walk), so grab all three before you turn it in. You get the legend quest from the weekly 'Lost Legends' at Zur'ashar Kassameh (54.2, 53.1): pick the legend you need. The weekly is locked account-wide, so it's one legend per week across all your characters. Steps stay locked until you're on the right legend. Missed one? After all the legends have rotated, the weekly lets you redo a legend you've already done.",
 		steps = {
 			{ name = "Echoes of Our Past--Part 1: Fading History",      obj = 579236, quest = 93475, map = HAR, x = 60.0, y = 20.9, note = "Legend: The Cauldron of Echoes. Outside, before the cave." },
 			{ name = "Echoes of Our Past--Part 2: Alndust",             obj = 579237, quest = 93474, map = HAR, x = 59.8, y = 18.5, note = "Legend: The Cauldron of Echoes. Inside the cave." },
@@ -390,3 +390,26 @@ ns.Achievements = {
 		},
 	},
 }
+
+-- Chronicler of the Haranir: each legend's lore objects only exist while you're
+-- on that legend's quest, picked through the weekly 'Lost Legends'.
+local LEGEND_QUESTS = {
+	["Wey'nan's Ward"] = 88993,
+	["The Cauldron of Echoes"] = 88994,
+	["Aln'hara's Bloom"] = 88995,
+	["The Echoless Flame"] = 88996,
+	["Russula's Outreach"] = 88997,
+	["Root of the World"] = 88998,
+	["Sky's Hope"] = 88999,
+}
+for _, ach in ipairs(ns.Achievements) do
+	if ach.id == 61344 then
+		for _, step in ipairs(ach.steps) do
+			local legend = step.note and step.note:match("^Legend: (.-)%.")
+			if legend and LEGEND_QUESTS[legend] then
+				step.needQuest = LEGEND_QUESTS[legend]
+				step.needText = ("pick '%s' from Zur'ashar Kassameh's weekly 'Lost Legends' (Harandar 54.2, 53.1)"):format(legend)
+			end
+		end
+	end
+end

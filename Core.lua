@@ -122,6 +122,14 @@ local function UpdateStatus()
 				end
 			end
 		end
+		-- Steps that only exist while you're on a quest (step.needQuest), e.g.
+		-- lore objects that appear during their legend's quest.
+		for _, step in ipairs(steps) do
+			if step.needQuest and not step.done and not step.locked
+				and not C_QuestLog.IsOnQuest(step.needQuest) then
+				step.locked = { name = step.needText or ("be on quest " .. step.needQuest) }
+			end
+		end
 		local n = 0
 		for _, step in ipairs(steps) do
 			if step.done then n = n + 1 end
