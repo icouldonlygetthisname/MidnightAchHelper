@@ -38,6 +38,7 @@ local function BuildSteps()
 					name = ("Glowing Moth #%d (Renown %d)"):format(i, m[5]),
 					map = m[1], x = m[2], y = m[3], quest = m[4], note = m[6],
 					obj = ach.mothObjects and ach.mothObjects[i],
+					needRenown = m[5],
 				}
 			end
 		elseif ach.critByName then
@@ -128,6 +129,15 @@ local function UpdateStatus()
 			if step.needQuest and not step.done and not step.locked
 				and not C_QuestLog.IsOnQuest(step.needQuest) then
 				step.locked = { name = step.needText or ("be on quest " .. step.needQuest) }
+			end
+		end
+		-- Steps gated by a renown level (moths unlock in batches with Hara'ti renown).
+		if ach.renownFaction and C_MajorFactions and C_MajorFactions.GetCurrentRenownLevel then
+			local level = C_MajorFactions.GetCurrentRenownLevel(ach.renownFaction) or 0
+			for _, step in ipairs(steps) do
+				if step.needRenown and not step.done and not step.locked and level < step.needRenown then
+					step.locked = { name = ("reach %s Renown %d (you're at %d)"):format(ach.renownName or "faction", step.needRenown, level) }
+				end
 			end
 		end
 		local n = 0
@@ -557,6 +567,148 @@ function MAH:Nearest()
 end
 
 -------------------------------------------------------------------------------
+-- Moth button (Dust 'Em Off)
+-- Moths are game objects, which /target can't select, so the button pins the
+-- nearest collectable moth instead and can switch on soft-interact so the
+-- Interact key picks one up as you reach it.
+-------------------------------------------------------------------------------
+
+local MOTH_ACH = 61052
+local HARANDAR, THE_DEN = 2413, 2576
+local SOFT_CVARS = { "SoftTargetInteract", "SoftTargetIconGameObject", "SoftTargetIconInteract" }
+local mothButton
+
+local function MothAchievement()
+	for _, ach in ipairs(ns.Achievements) do
+		if ach.id == MOTH_ACH then return ach end
+	end
+end
+
+local function MothsLeft(ach)
+	local left, ready = 0, 0
+	for _, step in ipairs(ach.steps) do
+		if not step.done then
+			left = left + 1
+			if not step.locked then ready = ready + 1 end
+		end
+	end
+	return left, ready
+end
+
+local function SoftInteractOn()
+	return C_CVar.GetCVar("SoftTargetInteract") == "3"
+end
+
+local function ToggleSoftInteract()
+	if InCombatLockdown() then
+		Print("Can't change targeting settings in combat.")
+		return
+	end
+	if SoftInteractOn() and DB.softInteractSaved then
+		for _, cvar in ipairs(SOFT_CVARS) do
+			C_CVar.SetCVar(cvar, DB.softInteractSaved[cvar] or "0")
+		end
+		DB.softInteractSaved = nil
+		Print("Soft interact restored to your previous setting.")
+	else
+		DB.softInteractSaved = {}
+		for _, cvar in ipairs(SOFT_CVARS) do DB.softInteractSaved[cvar] = C_CVar.GetCVar(cvar) end
+		C_CVar.SetCVar("SoftTargetInteract", "3")
+		C_CVar.SetCVar("SoftTargetIconGameObject", "1")
+		C_CVar.SetCVar("SoftTargetIconInteract", "1")
+		local key = GetBindingKey("INTERACTTARGET")
+		if key then
+			Print(("Soft interact on: walk up to a moth and press |cffffff00%s|r to catch it. Right-click the moth button again to turn it off."):format(key))
+		else
+			Print("Soft interact on, but you have no Interact key bound. Bind 'Interact with Target' under Options > Keybindings > Targeting, then press it next to a moth.")
+		end
+	end
+end
+
+local function UpdateMothButton()
+	if not mothButton then return end
+	local ach = MothAchievement()
+	local map = C_Map.GetBestMapForUnit("player")
+	local inZone = map and (map == HARANDAR or map == THE_DEN or ZoneOf(map) == HARANDAR)
+	if not (ach and not ach.done and DB.mothButton ~= false and inZone) then
+		mothButton:Hide()
+		return
+	end
+	local left = MothsLeft(ach)
+	mothButton.count:SetText(left)
+	mothButton.glow:SetShown(SoftInteractOn())
+	mothButton:Show()
+end
+
+local function CreateMothButton()
+	local b = CreateFrame("Button", "MidnightAchHelperMothButton", UIParent)
+	b:SetSize(40, 40)
+	b:SetFrameStrata("MEDIUM")
+	b:SetClampedToScreen(true)
+	b:SetMovable(true)
+	b:RegisterForDrag("LeftButton")
+	b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	b:SetScript("OnDragStart", b.StartMoving)
+	b:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		local point, _, relPoint, x, y = self:GetPoint()
+		DB.mothPos = { point, relPoint, x, y }
+	end)
+	if DB.mothPos then
+		b:SetPoint(DB.mothPos[1], UIParent, DB.mothPos[2], DB.mothPos[3], DB.mothPos[4])
+	else
+		b:SetPoint("CENTER", 0, -180)
+	end
+
+	local icon = b:CreateTexture(nil, "ARTWORK")
+	icon:SetAllPoints()
+	icon:SetTexture(5015301)	-- moth icon (same one AllTheThings uses for the moth groups)
+	b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+	b:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+
+	b.glow = b:CreateTexture(nil, "OVERLAY")
+	b.glow:SetPoint("TOPLEFT", -8, 8)
+	b.glow:SetPoint("BOTTOMRIGHT", 8, -8)
+	b.glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+	b.glow:SetBlendMode("ADD")
+	b.glow:SetVertexColor(0.4, 1, 0.4)
+
+	b.count = b:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
+	b.count:SetPoint("BOTTOMRIGHT", -2, 2)
+
+	b:SetScript("OnClick", function(_, button)
+		if button == "RightButton" then
+			ToggleSoftInteract()
+		else
+			UpdateStatus()
+			local ach = MothAchievement()
+			local _, step = FindNearest(ach)
+			if step then
+				SetWaypoint(ach, step)
+			else
+				Print("No moth you can collect right now - the rest need more Hara'ti renown.")
+			end
+			MAH:Render()
+		end
+		UpdateMothButton()
+	end)
+	b:SetScript("OnEnter", function(self)
+		local ach = MothAchievement()
+		local left, ready = MothsLeft(ach)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:AddLine("Glowing Moths", 1, 0.82, 0)
+		GameTooltip:AddLine(("%d left, %d collectable at your renown"):format(left, ready), 1, 1, 1)
+		GameTooltip:AddLine("Left-click: pin the nearest moth (moves on after each catch)", 0.5, 0.8, 1)
+		GameTooltip:AddLine("Right-click: " .. (SoftInteractOn() and "turn soft interact off" or "turn on soft interact, so your Interact key catches a moth when you're next to it"), 0.5, 0.8, 1, true)
+		GameTooltip:AddLine("Drag to move. /mach moth hides it.", 0.6, 0.6, 0.6)
+		GameTooltip:Show()
+	end)
+	b:SetScript("OnLeave", GameTooltip_Hide)
+	b:Hide()
+	mothButton = b
+end
+
+-------------------------------------------------------------------------------
 -- Events
 -------------------------------------------------------------------------------
 
@@ -566,6 +718,7 @@ local function Refresh()
 	UpdateStatus()
 	AdvanceIfDone()
 	MAH:Render()
+	UpdateMothButton()
 end
 
 local function QueueRefresh()
@@ -586,7 +739,9 @@ MAH:SetScript("OnEvent", function(self, event, arg1)
 		-- Moth list is long; start it collapsed.
 		if DB.collapsed[61052] == nil then DB.collapsed[61052] = true end
 	elseif event == "PLAYER_ENTERING_WORLD" then
+		if not mothButton then CreateMothButton() end
 		UpdateStatus()
+		UpdateMothButton()
 	else
 		QueueRefresh()
 	end
@@ -601,6 +756,8 @@ MAH:RegisterEvent("QUEST_ACCEPTED")
 MAH:RegisterEvent("LOOT_CLOSED")
 MAH:RegisterEvent("BAG_UPDATE_DELAYED")
 MAH:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+MAH:RegisterEvent("ZONE_CHANGED")	-- e.g. walking into The Den, for the moth button
+MAH:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")	-- unlocks the next batch of moths
 
 -- Hidden "tracking" quests (moths, lore objects) don't always fire events, so
 -- poll lightly while a waypoint is active.
@@ -681,6 +838,10 @@ SlashCmdList.MIDNIGHTACHHELPER = function(msg)
 				Print(("%s (%d/%d) - %s"):format(ach.name, ach.numDone, #ach.steps, ach.zone))
 			end
 		end
+	elseif msg == "moth" then
+		DB.mothButton = DB.mothButton == false
+		Print("Moth button " .. (DB.mothButton and "on (shows in Harandar)" or "hidden. /mach moth to bring it back."))
+		UpdateMothButton()
 	elseif msg == "snap" then
 		questSnapshot = {}
 		for _, id in ipairs(C_QuestLog.GetAllCompletedQuestIDs() or {}) do questSnapshot[id] = true end

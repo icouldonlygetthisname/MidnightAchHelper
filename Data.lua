@@ -147,6 +147,7 @@ ns.Achievements = {
 	},
 	{
 		id = 61052, name = "Dust 'Em Off", zone = "Harandar",
+		renownFaction = 2704, renownName = "Hara'ti",	-- moths unlock with Hara'ti renown
 		desc = "Catch all 120 Glowing Moths.",
 		info = "Moths are small glowing objects and unlock in batches with Hara'ti renown: about 40 from Renown 1-2, 40 more from Renown 4-5 and the last 40 from Renown 9. They only show on the minimap from Renown 2 / 6 / 11. Hit Renown 9 first and then do them all in one sweep. Mothkeeper Wew'tam (49.3, 54.3) has rewards every 10 moths.",
 		-- Wowhead object IDs, same order as moths

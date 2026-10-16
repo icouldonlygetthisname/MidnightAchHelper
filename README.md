@@ -12,6 +12,9 @@ It also covers each zone's rare-hunting achievement, with every rare's spawn poi
 | `/mach nearest` | Set a waypoint to the closest unfinished step on your continent |
 | `/mach clear` | Remove the waypoint |
 | `/mach list` | Print the achievements you still need |
+| `/mach moth` | Show or hide the Glowing Moth button |
+
+**Moth button (Dust 'Em Off):** in Harandar a small moth button appears with the number of moths left. Left-click pins the nearest moth you can collect (it skips moths your Hara'ti renown hasn't unlocked yet, and moves on after each catch). Right-click turns on soft interact, so your Interact key catches a moth as soon as you're next to it; right-click again restores your previous setting. Moths are objects, which `/target` macros can't select, so this is the closest thing to a targeting macro.
 
 In the window:
 
